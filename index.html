@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8"/>
+  <title>상품 상세설명 5줄 요약</title>
+  <style>
+    body {
+      max-width: 700px;
+      margin: 0 auto;
+      padding: 1rem;
+      font-family: sans-serif;
+      background-color: #f9f9f9;
+    }
+    h1 {
+      text-align: center;
+    }
+    .container {
+      background: #fff;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 0 4px rgba(0,0,0,0.1);
+    }
+    label {
+      display: inline-block;
+      width: 100px;
+      font-weight: bold;
+      margin-bottom: 0.3rem;
+    }
+    input[type="text"] {
+      width: 250px;
+      margin-bottom: 0.5rem;
+      padding: 0.3rem;
+    }
+    input[type="file"] {
+      margin-bottom: 1rem;
+    }
+    textarea {
+      width: 100%;
+      height: 80px;
+      margin-bottom: 0.5rem;
+      padding: 0.4rem;
+      box-sizing: border-box;
+    }
+    button {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 0.5rem;
+    }
+    .preview {
+      margin-top: 1rem;
+    }
+    .summary-area {
+      margin-top: 1rem;
+      background: #fafafa;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      padding: 0.5rem;
+      min-height: 80px;
+    }
+    .summary-line {
+      margin-bottom: 0.3rem;
+    }
+  </style>
+</head>
+<body>
+
+<h1>상품 상세설명 5줄 요약</h1>
+
+<div class="container">
+  <p>아래에 상품 이미지를 업로드하고, 상품명과 상세설명을 입력하면,<br/>
+  해당 상세설명을 <strong>5줄</strong>로 요약해 보여줍니다.</p>
+
+  <div>
+    <label>상품 이미지</label><br/>
+    <input type="file" id="productImage" accept="image/*" />
+  </div>
+
+  <div>
+    <label>상품명</label><br/>
+    <input type="text" id="productName" placeholder="예) 초콜릿쿠키" />
+  </div>
+
+  <div>
+    <label>상세설명</label><br/>
+    <textarea id="productDetail" placeholder="상세 설명을 입력해주세요"></textarea>
+  </div>
+
+  <button id="generateBtn">5줄 요약 생성</button>
+
+  <!-- 미리보기 -->
+  <div class="preview" id="previewArea"></div>
+
+  <!-- 요약 결과 -->
+  <div class="summary-area" id="summaryArea">여기에 요약 결과가 표시됩니다.</div>
+</div>
+
+<script>
+const productImageInput = document.getElementById('productImage');
+const productNameInput = document.getElementById('productName');
+const productDetailInput = document.getElementById('productDetail');
+const previewArea = document.getElementById('previewArea');
+const generateBtn = document.getElementById('generateBtn');
+const summaryArea = document.getElementById('summaryArea');
+
+// (1) 이미지 미리보기
+productImageInput.addEventListener('change', () => {
+  const file = productImageInput.files[0];
+  if (!file) {
+    previewArea.innerHTML = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    previewArea.innerHTML = `<img src="${e.target.result}" 
+      alt="상품 이미지 미리보기" style="max-width: 200px; margin-top:0.5rem;">`;
+  };
+  reader.readAsDataURL(file);
+});
+
+// (2) "5줄 요약 생성" 버튼을 클릭했을 때
+generateBtn.addEventListener('click', () => {
+  const productName = productNameInput.value.trim();
+  const detail = productDetailInput.value.trim();
+
+  if (!productName) {
+    summaryArea.innerHTML = `<p style="color:red;">상품명을 입력해주세요.</p>`;
+    return;
+  }
+  if (!detail) {
+    summaryArea.innerHTML = `<p style="color:red;">상세 설명을 입력해주세요.</p>`;
+    return;
+  }
+
+  // 5줄 요약 로직 (임시):
+  // 단순히 newline 기준으로 분리하거나, '.' 문장 단위 등으로 분리해서
+  // 앞 5문장 (or 5줄)만 추출하는 예시
+
+  const lines = detail.split(/\r?\n|\./) // 줄바꿈/마침표 기준 분리 (간단 예)
+    .map(l => l.trim())
+    .filter(l => l.length > 0); // 빈 줄/공백만 있는 항목 제거
+
+  // 최대 5줄만
+  const summaryLines = lines.slice(0, 5);
+
+  // 출력 포맷
+  let html = `<strong>${productName}</strong>의 상세설명 요약:<br/>`;
+  if (summaryLines.length === 0) {
+    html += `<p style="color:blue">요약할 문장이 없습니다.</p>`;
+  } else {
+    summaryLines.forEach((line, idx) => {
+      html += `<div class="summary-line">${idx+1}. ${line}</div>`;
+    });
+  }
+
+  summaryArea.innerHTML = html;
+});
+</script>
+
+</body>
+</html>
